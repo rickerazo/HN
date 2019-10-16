@@ -15,20 +15,21 @@ import itertools
 import os
 ####	graphix stuff
 font = {'weight' : 'bold',
-        'size'   : 60}
+        'size'   : 70}
 plt.rc('font', **font)
 mk = 20
 mk2 = 8
 lw= 15
 alpha0 = 1
 markers = ['.', '2', 'x', '1','4','3','p','+','h','|']
-colores = ['b', 'g', 'r', 'c','m','k','y','b', 'g', 'b']
-
+# colores = ['k','b','brown','c','g','gray','m','orange','pink','r','yellow']
+colores = ['','k','b','brown','c','g','gray','m','orange','pink','r','yellow']
+colores = colores[::-1]
 # The next section analyzes the data files specified by the max and min parameters above. There is one section for gp sweeps and another for Ipumpmax sweeps.
 def compute(list10):
 	control = list10[-1]
 	list1 = list10[0:-2]
-	####################################################################################	
+	################pl####################################################################	
 	############################# Sodium sweep ###########################################	
 	if control == 'I':
 		IpumpMax = list10[-2]	
@@ -66,6 +67,7 @@ def compute(list10):
 		for i in range(0,np.size(list0)):
 			j=list1[i]
 			gp = j
+			x_all = int(gp)
 			#BD
 			filename1 = fileID+'_'+str1+str(gp)+strend
 			burst_duration = np.load(filename1)
@@ -75,8 +77,8 @@ def compute(list10):
 
 			plt.figure(1)
 			# plt.plot([gp,gp],[np.mean(burst_duration)-np.std(burst_duration),np.mean(burst_duration)+np.std(burst_duration)])
-			plt.plot(gp,np.max(burst_duration),'^',markersize=mk,color='green')
-			plt.plot(gp,np.min(burst_duration),'v',markersize=mk,color='red')
+			plt.plot(gp,np.mean(burst_duration)+np.std(burst_duration),'^',markersize=mk,color='green')
+			plt.plot(gp,np.mean(burst_duration)-np.std(burst_duration),'v',markersize=mk,color='red')
 			plt.plot(x,burst_duration,'.',markersize=mk-10)
 			plt.plot(gp,np.mean(burst_duration),'*',markersize=mk,color='black')
 			plt.title(r'Burst duration $I_{pump}^{max}$='+str(IpumpMax))
@@ -93,8 +95,8 @@ def compute(list10):
 			x = np.zeros((1,np.size(interburst_interval)))
 			x=x[0]+gp
 			plt.figure(2)
-			plt.plot(gp,np.max(interburst_interval),'^',markersize=mk,color='green')
-			plt.plot(gp,np.min(interburst_interval),'v',markersize=mk,color='red')
+			plt.plot(gp,np.mean(interburst_interval)+np.std(interburst_interval),'^',markersize=mk,color='green')
+			plt.plot(gp,np.mean(interburst_interval)-np.std(interburst_interval),'v',markersize=mk,color='red')
 			plt.plot(x,interburst_interval,'.',markersize=mk-10)
 			plt.plot(gp,np.mean(interburst_interval),'*',markersize=mk,color='black')
 			plt.title(r'Interburst interval $I_{pump}^{max}$='+str(IpumpMax))
@@ -112,8 +114,8 @@ def compute(list10):
 			x=x[0]+gp
 
 			plt.figure(3)
-			plt.plot(gp,np.max(cycle_period),'^',markersize=mk,color='green')
-			plt.plot(gp,np.min(cycle_period),'v',markersize=mk,color='red')
+			plt.plot(gp,np.mean(cycle_period)+np.std(cycle_period),'^',markersize=mk,color='green')
+			plt.plot(gp,np.mean(cycle_period)-np.std(cycle_period),'v',markersize=mk,color='red')
 			plt.plot(x,cycle_period,'.',markersize=mk-10)
 			plt.plot(gp,np.mean(cycle_period),'*',markersize=mk,color='black')
 			plt.title(r'Cycle period $I_{pump}^{max}$='+str(IpumpMax))
@@ -131,8 +133,8 @@ def compute(list10):
 			x=x[0]+gp
 
 			plt.figure(4)
-			plt.plot(gp,np.max(mean_hz),'^',markersize=mk,color='green')
-			plt.plot(gp,np.min(mean_hz),'v',markersize=mk,color='red')
+			plt.plot(gp,np.mean(mean_hz)+np.std(mean_hz),'^',markersize=mk,color='green')
+			plt.plot(gp,np.mean(mean_hz)-np.std(mean_hz),'v',markersize=mk,color='red')
 			plt.plot(x,mean_hz,'.',markersize=mk-10)
 			plt.plot(gp,np.mean(mean_hz),'*',markersize=mk,color='black')
 
@@ -149,10 +151,12 @@ def compute(list10):
 			Ipump = Ipump/IpumpMax
 			CytNa = np.load(fileID+'_cytNa_IpumpMax='+str(IpumpMax)+'_gp='+str(gp)+'.npy')
 			plt.figure(5)
-			plt.plot(CytNa,Ipump, marker=markers[i], color=colores[i],linewidth=lw,linestyle='', markersize=mk2 ,label=r'$g_p$='+str(gp))
-			plt.plot(np.mean(CytNa),np.min(Ipump), '*',markersize=mk, color=colores[i])
-			plt.plot(np.min(CytNa),np.min(Ipump), marker=markers[i], markersize=mk, color=colores[i])
-			plt.plot(np.max(CytNa),np.min(Ipump), marker=markers[i], markersize=mk, color=colores[i])
+			plt.plot(CytNa,Ipump, marker='o', color=colores[x_all],linewidth=lw,linestyle='', markersize=mk2 ,label=r'$g_p$='+str(gp))
+			plt.plot([np.min(CytNa),np.max(CytNa)],[np.min(Ipump),np.min(Ipump)],color=colores[x_all],linewidth=3)
+			plt.plot([np.min(CytNa),np.max(CytNa)],[np.max(Ipump),np.max(Ipump)],color=colores[x_all],linewidth=3)
+			# plt.plot(np.mean(CytNa),np.min(Ipump), '*',markersize=mk, color=colores[i])
+			# plt.plot(np.min(CytNa),np.min(Ipump), marker='o', markersize=mk, color=colores[i])
+			# plt.plot(np.max(CytNa),np.min(Ipump), marker='o', markersize=mk, color=colores[i])
 
 		plt.figure(1)
 		# plt.plot(gp,np.mean(burst_duration)+np.std(burst_duration),'^',markersize=mk,color='green',label=r'$\mu + \sigma$')
@@ -195,11 +199,13 @@ def compute(list10):
 		plt.savefig(fileID+'_mean_hz.png')
 
 		plt.figure(5)
-		plt.axis([np.min(CytNa)-2.5,np.max(CytNa)+5,0,1.1])
-		plt.title(r'Na/K pump current and Cytosol Sodium $I_{pump}^{max}$='+str(IpumpMax))
+		# plt.axis([np.min(CytNa)-2.5,np.max(CytNa)+5,0,1.1])
+		plt.xlim(10,26)
+		plt.ylim(0.,1.1)
+		plt.title(r'$Na^+/K^+$ and $[Na^+]_{cyt}$$I_{pump}^{max}$='+str(IpumpMax))
 		plt.xlabel(r'$[Na^+]_{in}$ nM')
 		plt.ylabel(r'Activation of $I_{pump}$ nA')
-		plt.legend()
+		plt.legend(markerscale=5)
 		plt.savefig(fileID+'_CytNa_Ipump.png')
 
 		plt.ion()
@@ -235,9 +241,10 @@ def compute(list10):
 		for i in range(0,np.size(list1)):
 			j=list1[i]
 			IpumpMax = j
+			# x_all = int(IpumpMax*10)
 			# p2 = int(np.round(10*(IpumpMax-min_pump)))
 			p2 = i
-
+			x_all = int(IpumpMax*10)
 			str1 = 'BD_IpumpMax='+str(IpumpMax)+'_gp='
 			str2 = 'IBI_IpumpMax='+str(IpumpMax)+'_gp='
 			str3 = 'T_IpumpMax='+str(IpumpMax)+'_gp='
@@ -329,10 +336,13 @@ def compute(list10):
 			CytNa = np.load(fileID+'_cytNa_IpumpMax='+str(IpumpMax)+'_gp='+str(gp)+'.npy')
 			plt.figure(5)
 			# plt.plot(CytNa,Ipump, linewidth=lw/2,label='gp='+str(gp))
-			plt.plot(CytNa,Ipump, marker=markers[i], color=colores[i],linewidth=lw,linestyle='', markersize=mk2 ,label=r'$I_{pump}^{max}$='+str(IpumpMax))
-			plt.plot(np.mean(CytNa),np.min(Ipump), '*',markersize=mk, color=colores[i])
-			plt.plot(np.min(CytNa),np.min(Ipump), marker=markers[i], markersize=mk, color=colores[i])
-			plt.plot(np.max(CytNa),np.min(Ipump), marker=markers[i], markersize=mk, color=colores[i])
+			plt.plot(CytNa,Ipump, marker='o', color=colores[x_all],linewidth=lw,linestyle='', markersize=mk2 ,label=r'$I_{pump}^{max}$='+str(IpumpMax))
+			# plt.plot(np.mean(CytNa),np.min(Ipump), '*',markersize=mk, color=colores[x_all])
+			plt.plot([np.min(CytNa),np.max(CytNa)],[np.min(Ipump),np.min(Ipump)],color=colores[x_all],linewidth=3)
+			plt.plot([np.min(CytNa),np.max(CytNa)],[np.max(Ipump),np.max(Ipump)],color=colores[x_all],linewidth=3)
+
+			# plt.plot(np.min(CytNa),np.min(Ipump), marker=markers[i], markersize=mk, color=colores[x_all])
+			# plt.plot(np.max(CytNa),np.min(Ipump), marker=markers[i], markersize=mk, color=colores[x_all])
 			# plt.plot(np.mean(CytNa)+np.std(CytNa),np.mean(Ipump)+np.std(Ipump) +shift, '^',markersize=mk, color='green')
 			# plt.plot(np.mean(CytNa)-np.std(CytNa),np.mean(Ipump)-np.std(Ipump) +shift, 'v',markersize=mk, color='red')
 
@@ -347,7 +357,7 @@ def compute(list10):
 		plt.plot(list1,BD_mean+BD_std,':',linewidth=lw)
 		plt.plot(list1,BD_mean-BD_std,':',linewidth=lw)
 
-		plt.legend()
+		# plt.legend()
 		plt.savefig(fileID+'_burst_duration.png')
 
 		plt.figure(2)
@@ -361,7 +371,7 @@ def compute(list10):
 		plt.plot(list1,IBI_mean+IBI_std,':',linewidth=lw)
 		plt.plot(list1,IBI_mean-IBI_std,':',linewidth=lw)
 
-		plt.legend()
+		# plt.legend()
 		plt.savefig(fileID+'_interburst_interval.png')
 
 		plt.figure(3)
@@ -375,7 +385,7 @@ def compute(list10):
 		plt.plot(list1,T_mean+T_std,':',linewidth=lw)
 		plt.plot(list1,T_mean-T_std,':',linewidth=lw)
 
-		plt.legend()
+		# plt.legend()
 		plt.savefig(fileID+'_cycle_period.png')
 
 		plt.figure(4)
@@ -389,167 +399,72 @@ def compute(list10):
 		plt.savefig(fileID+'_mean_hz.png')
 
 		plt.figure(5)
-		plt.title(r'Na/K pump current and Cytosol Sodium $g_p$='+str(gp))
+		plt.title(r'$Na^+/K^+$ and $[Na^+]_{cyt}$ $\bar{g}_P$='+str(gp))
+		plt.ylim(0,1.1)
 		plt.xlabel(r'$[Na^+]_{in}$ nM')
 		plt.ylabel(r'Activation of $I_{pump}$ nA')
-		plt.legend()
+		plt.legend(markerscale=5)
 		plt.savefig(fileID+'_CytNa_Ipump.png')
 
 		plt.ion()
 		plt.show()
 
 
+def append_list(control,list1,x):
+	list1.append(x)
+	list1.append(control)
+	return list1
 
 ##### file ID stuff
 cwd = os.getcwd()
 fileID= cwd[-8:len(cwd)]
 
 ############## MANIPULATE to modify behavior of script, later the code should be more interactive and receive these parameters as user-input in the command-line
-list1 = [0.1,0.2,0.3,0.4,0.5,0.6,0.7]
-list2 = [0.1,0.2,0.3,0.4,0.5,0.6,0.7]
-list3 = [0.4,0.5,0.7,0.8,0.9]
+list1 = [4.0,5.0,6.0,7.0,8.0,9.0,10.0] #IpumpMax = 0.1
 
-list4 = [4.0,5.0,6.0]
-list5 = [4.0,5.0,6.0]
-list6 = [4.0,5.0,6.0]
+I_bias = 0.1
 
-I_bias = 0.
+IpumpMax=0.2
+control = 'I'
+list10 = append_list(control,list1,IpumpMax)
+
 #list1
-gp = 4.0			#used exclusively for Gp sweep
-# IpumpMax = 0.3
-control = 'G'
-
-if control=='I':
-	list1.append(IpumpMax)
-	cntrl = IpumpMax
-elif control =='G':
-	list1.append(gp)
-	cntrl = gp
-list1.append(control)
-
-#list2
-gp = 5.0
-# IpumpMax = 0.75
-control = 'G'
-
-if control=='I':
-	list2.append(IpumpMax)
-	cntrl = IpumpMax
-elif control =='G':
-	list2.append(gp)
-	cntrl = gp
-list2.append(control)
-
-#list3
-# IpumpMax = 0.8
-gp = 6.0
-control = 'G'
-
-if control=='I':
-	list3.append(IpumpMax)
-	cntrl = IpumpMax
-elif control =='G':
-	list3.append(gp)
-	cntrl = gp
-list3.append(control)
-
-#list4
-IpumpMax = 0.4
-# gp = 6.0
+IpumpMax = 0.2
 control = 'I'
-
-if control=='I':
-	list4.append(IpumpMax)
-	cntrl = IpumpMax
-elif control =='G':
-	list4.append(gp)
-	cntrl = gp
-list4.append(control)
-
-#list5
-IpumpMax = 0.5
-# gp = 6.0
-control = 'I'
-
-if control=='I':
-	list5.append(IpumpMax)
-	cntrl = IpumpMax
-elif control =='G':
-	list5.append(gp)
-	cntrl = gp
-list5.append(control)
-
-#list6
-IpumpMax = 0.7
-# gp = 6.0
-control = 'I'
-
-if control=='I':
-	list6.append(IpumpMax)
-	cntrl = IpumpMax
-elif control =='G':
-	list6.append(gp)
-	cntrl = gp
-list6.append(control)
-
 
 ############			save data parameters for subsequent use
 np.save(fileID+'_list1',list1)
-np.save(fileID+'_list2',list2)
-np.save(fileID+'_list3',list3)
-
-np.save(fileID+'_list4',list4)
-np.save(fileID+'_list5',list5)
-np.save(fileID+'_list6',list6)
 
 np.save(fileID+'_Ibias',I_bias)
 
-param0 = ['list1','list2','list3','list4','list5','list6']
+# param0 = ['list1','list2','list3','list4','list5','list6','list7','list8','list9','list10','list11']
+param0 = ['list1']#,'list3','list4','list5','list6','list7','list8','list9','list10','list11']
 np.save(fileID+'_param',param0)
 ################################################### 1
-plt.figure(1,figsize=(45,30))
+plt.figure(1,figsize=(25,20))
 # IBI
-plt.figure(2,figsize=(45,30))
+plt.figure(2,figsize=(25,20))
 # T
-plt.figure(3,figsize=(45,30))
+plt.figure(3,figsize=(25,20))
 # Hz
-plt.figure(4,figsize=(45,30))
+plt.figure(4,figsize=(25,20))
 # Pump vs Na_in
-plt.figure(5,figsize=(45,30))
+plt.figure(5,figsize=(25,20))
 
 
-compute(list1)
+# compute(list1)
 
-# plt.close('all')
-compute(list2)
-compute(list3)
-# ################################################### 2
-plt.figure(6,figsize=(45,30))
-# IBI
-plt.figure(7,figsize=(45,30))
-# T
-plt.figure(8,figsize=(45,30))
-# Hz
-plt.figure(9,figsize=(45,30))
-# Pump vs Na_in
-plt.figure(10,figsize=(45,30))
-compute(list4)
-compute(list5)
-compute(list6)
-
-# plt.close('all')
-
-
-# ################################################### 3
-# plt.figure(1,figsize=(45,30))
-# # IBI
-# plt.figure(2,figsize=(45,30))
-# # T
-# plt.figure(3,figsize=(45,30))
-# # Hz
-# plt.figure(4,figsize=(45,30))
-# # Pump vs Na_in
-# plt.figure(5,figsize=(45,30))
+# compute(list2)
 # compute(list3)
+# compute(list4)
+# compute(list5)
+# compute(list6)
 
-# plt.close('all')
+# compute(list7)
+# compute(list8)
+# compute(list9)
+
+# compute(list10)
+# compute(list11)
+
+compute(list10)

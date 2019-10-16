@@ -82,7 +82,7 @@ plt.xlabel('Time(s)')
 # data analysis
 # 1. spike detection
 Vthreshold = -20
-spikes = find_peaks(V, height=Vthreshold)
+spikes = find_peaks(V, height=Vthreshold, prominence=10)
 spike_times = time[spikes[0]]
 
 ## plot spikes
@@ -96,7 +96,7 @@ spike_lag = np.diff(spike_times)
 
 # last spike in bursts -> mechanism: identify spiking frequency, then when the interspike interval is greater than the mean spiking frequency + 4 std deviations
 # interspike interval tolerance for burst discrimination:
-interspike_tolerance = np.mean(spike_lag)+np.std(spike_lag)*7
+interspike_tolerance = np.mean(spike_lag)+np.std(spike_lag)
 p1 = np.nonzero(spike_lag>interspike_tolerance)
 p1 = p1[0]
 last_spike = np.append(p1,np.size(spike_times)-1)
